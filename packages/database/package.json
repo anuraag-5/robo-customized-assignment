@@ -4,7 +4,7 @@
   "type": "module",
   "exports": {
     "./connection": "./index.ts",
-    "./tables": "./schema.ts"
+    "./tables": "./auth-schema.ts"
   },
   "private": true,
   "devDependencies": {
