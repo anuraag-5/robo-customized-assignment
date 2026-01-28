@@ -1,11 +1,8 @@
-import "dotenv/config";
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 
-const databaseUrl = process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL is not defined");
-}
+const connectionString = process.env.DATABASE_URL!
+const client = postgres(connectionString, { prepare: false })
+export const db = drizzle(client);
 
 export { eq, like } from "drizzle-orm";
-export const db = drizzle(databaseUrl);

@@ -1,0 +1,1 @@
+ALTER TABLE "users_image" ALTER COLUMN "image" DROP DEFAULT;

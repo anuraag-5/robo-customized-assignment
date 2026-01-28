@@ -15,6 +15,20 @@
       "when": 1769589782108,
       "tag": "0001_lonely_greymalkin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769620905637,
+      "tag": "0002_faithful_medusa",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769621127422,
+      "tag": "0003_blue_santa_claus",
+      "breakpoints": true
     }
   ]
 }
