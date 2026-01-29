@@ -3,7 +3,7 @@ import { auth } from "./lib/auth";
 
 export const requireAuth = async (req: Request, res: Response, next: NextFunction ) => {
   const session = await auth.api.getSession({
-    headers: req.rawHeaders,
+    headers: req.headers,
   });
 
   if (!session) {

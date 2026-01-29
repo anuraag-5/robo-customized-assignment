@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import userRouter from "./routes/userRouter";
+import appRouter from "./routes/appRouter";
 const app = express();
 
 app.use(express.json());
@@ -13,5 +14,6 @@ app.use(
   }),
 );
 app.use("/user", userRouter);
+app.use("/app", appRouter);
 
 app.listen(Number(process.env.PORT), () => console.log(`Process listening on ${process.env.PORT}`))

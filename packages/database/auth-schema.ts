@@ -1,6 +1,13 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index, varchar } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  index,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -74,38 +81,48 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const usersChat = pgTable("users_chat", {
-  id: varchar().primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  prompts: text("prompts").notNull().default("[]"),
-  answers: text("answers").notNull().default("[]"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-}, (table) => [index("usersChat_userId_idx").on(table.userId)]);
+export const usersChat = pgTable(
+  "users_chat",
+  {
+    id: varchar().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    prompts: text("prompts").notNull().default("[]"),
+    answers: text("answers").notNull().default("[]"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("usersChat_userId_idx").on(table.userId)],
+);
 
-export const usersImage = pgTable("users_image", {
-  id: varchar().primaryKey().$defaultFn(() => createId()),
-  usersChatId: varchar("users_chat_id")
-    .notNull()
-    .references(() => usersChat.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  image: text("image").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-}, (table) => [
-  index("usersImage_usersChatId_idx").on(table.usersChatId),
-  index("usersImage_userId_idx").on(table.userId)
-]);
+export const usersImage = pgTable(
+  "users_image",
+  {
+    id: varchar()
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    usersChatId: varchar("users_chat_id")
+      .notNull()
+      .references(() => usersChat.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    image: text("image").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("usersImage_usersChatId_idx").on(table.usersChatId),
+    index("usersImage_userId_idx").on(table.userId),
+  ],
+);
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
