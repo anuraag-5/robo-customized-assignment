@@ -112,6 +112,7 @@ export const usersImage = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     image: text("image").notNull(),
+    responseId: text("response_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

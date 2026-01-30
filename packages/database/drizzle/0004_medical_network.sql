@@ -1,0 +1,1 @@
+ALTER TABLE "users_image" ADD COLUMN "response_id" text NOT NULL;
