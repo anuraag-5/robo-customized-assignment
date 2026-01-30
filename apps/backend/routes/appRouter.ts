@@ -1,7 +1,7 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "database/connection";
 import { Router } from "express";
-import { usersChat } from "database/tables";
+import { usersChat, usersImage } from "database/tables";
 import { AssetSchema } from "../lib/openai/outputTypes";
 import { requireAuth } from "../middleware";
 import { zodTextFormat } from "openai/helpers/zod.js";
@@ -13,22 +13,60 @@ const appRouter = Router();
 appRouter.post("/generate_image", requireAuth, async (req, res) => {
   try {
     const { prompt, chatId } = req.body;
-    const img = await openApiClient.images.generate({
-      model: "gpt-image-1-mini",
-      prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "low", // Change remove at production
-    });
+
+    if (!prompt || !chatId) {
+      return res.status(400).json({
+        success: false,
+        message: "Prompt and chatId are required",
+      });
+    }
+
+    if (!req.user?.id) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+
+    const existingChat = await db
+      .select()
+      .from(usersChat)
+      .where(and(eq(usersChat.id, chatId), eq(usersChat.userId, req.user.id)));
+    
+    const existingChatImages = await db
+      .select()
+      .from(usersImage)
+      .where(and(eq(usersImage.usersChatId, chatId), eq(usersImage.userId, req.user.id)));
+
+    const messages: Array<{
+      role: "system" | "user" | "assistant";
+      content: string;
+    }> = [
+      {
+        role: "system",
+        content:
+          "You are an AI marketing assistant that generates engaging marketing post for social media platforms.",
+      },
+    ];
+
+    if (existingChat[0]) {
+    }
+    // const img = await openApiClient.images.generate({
+    //   model: "gpt-image-1-mini",
+    //   prompt,
+    //   n: 1,
+    //   size: "1024x1024",
+    //   quality: "low", // Change remove at production
+    // });
 
     ///@ts-ignore
-    const imageBuffer = Buffer.from(img.data[0].b64_json, "base64");
-    const filePath = `generated/${crypto.randomUUID()}.png`;
-    await supabaseClient.storage
-      .from(process.env.SUPABASE_BUCKET_NAME!)
-      .upload(filePath, imageBuffer, {
-        contentType: "image/png",
-      });
+    // const imageBuffer = Buffer.from(img.data[0].b64_json, "base64");
+    // const filePath = `generated/${crypto.randomUUID()}.png`;
+    // await supabaseClient.storage
+    //   .from(process.env.SUPABASE_BUCKET_NAME!)
+    //   .upload(filePath, imageBuffer, {
+    //     contentType: "image/png",
+    //   });
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown Error";
